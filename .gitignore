@@ -1,41 +1,50 @@
-# Compiled Lua sources
-luac.out
-
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
-
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
+local HighlightESP = {}
+        function HighlightESP.Create(Player)
+        local highlight = Instance.new("Highlight")
+        highlight.Parent = Player
+        highlight.Adornee = Player
+        highlight.FillColor = Color3.new(1, 0, 0) -- Red color
+        highlight.FillTransparency = 0.5 -- Adjust transparency to desired level
+        highlight.OutlineColor = Color3.new(1, 1, 1) -- White outline
+        highlight.OutlineTransparency = 0
+        
+        local Updater
+        
+        local function UpdateHighlight()
+        if Player and Player:IsA("Model") and Player:FindFirstChild("HumanoidRootPart") and Player:FindFirstChild("Head") then
+        highlight.Enabled = true
+        else
+        highlight.Enabled = false
+        if not Player then
+        highlight:Destroy()
+        Updater:Disconnect()
+        end
+        end
+        end
+        
+        Updater = game:GetService("RunService").RenderStepped:Connect(UpdateHighlight)
+        
+        return highlight
+        end
+        
+        local Highlights = {}
+        
+        local function EnableHighlightESP()
+        for _, Player in pairs(game:GetService("Workspace"):GetChildren()) do
+        if Player:IsA("Model") and Player:FindFirstChild("HumanoidRootPart") and Player:FindFirstChild("Head") then
+        local highlight = HighlightESP.Create(Player)
+        table.insert(Highlights, highlight)
+        end
+        end
+        end
+        
+        game.Workspace.DescendantAdded:Connect(function(i)
+        if i:IsA("Model") and i:FindFirstChild("HumanoidRootPart") and i:FindFirstChild("Head") then
+        local humanoidrootpart = i:FindFirstChild("HumanoidRootPart")
+        repeat wait() until humanoidrootpart    
+        local highlight = HighlightESP.Create(i)
+        table.insert(Highlights, highlight)
+        end
+        end)
+        
+        EnableHighlightESP()
